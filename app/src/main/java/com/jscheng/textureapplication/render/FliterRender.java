@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
-import android.opengl.GLUtils;
 import android.opengl.Matrix;
 
 import java.nio.ByteBuffer;
@@ -28,7 +27,7 @@ public class FliterRender extends TextureAbstractRender {
             1f, 0f, 0.0f,  // top right
     };
 
-    private Bitmap mBitmap;
+    private int mResrouceId;
     private FloatBuffer vertexBuffer;
     private FloatBuffer textureBuffer;
     private FliterEffect mFliterEffect;
@@ -37,6 +36,7 @@ public class FliterRender extends TextureAbstractRender {
     private int vMatrix;
     private int vChangeColor;
     private int vType;
+    private int sTexture;
     private int mTexture;
     private float[] mProjectMatrix;
     private float[] mViewMatrix;
@@ -48,8 +48,7 @@ public class FliterRender extends TextureAbstractRender {
     public FliterRender(Context context, FliterEffect mFliterEffect, int resourceId) {
         super(context);
         this.mFliterEffect = mFliterEffect;
-        this.mBitmap = BitmapFactory.decodeResource(context.getResources(), resourceId);
-        assert (mBitmap == null);
+        this.mResrouceId = resourceId;
     }
 
     @Override
@@ -70,29 +69,33 @@ public class FliterRender extends TextureAbstractRender {
                 .put(textureData);
         textureBuffer.position(0);
 
-        createTexture();
+        mTexture = loadTexture(mResrouceId);
 
         avPosition = GLES20.glGetAttribLocation(mProgram, "avPosition");
         afPosition = GLES20.glGetAttribLocation(mProgram, "afPosition");
         vMatrix = GLES20.glGetUniformLocation(mProgram, "vMatrix");
         vChangeColor = GLES20.glGetUniformLocation(mProgram, "vChangeColor");
         vType = GLES20.glGetUniformLocation(mProgram, "vType");
+        sTexture = GLES20.glGetUniformLocation(mProgram, "sTexture");
     }
 
     @Override
     protected void onChanged() {
-        int w=mBitmap.getWidth();
-        int h=mBitmap.getHeight();
-        float sWH=w/(float)h;
-        float sWidthHeight=width/(float)height;
-        if(width>height){
-            if(sWH>sWidthHeight){
+
+        Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), mResrouceId);
+        assert (bitmap == null);
+        int w = bitmap.getWidth();
+        int h = bitmap.getHeight();
+        float sWH = w/(float)h;
+        float sWidthHeight = width/(float)height;
+        if(width > height){
+            if(sWH > sWidthHeight){
                 Matrix.orthoM(mProjectMatrix, 0, -sWidthHeight*sWH,sWidthHeight*sWH, -1,1, 3, 7);
             }else{
                 Matrix.orthoM(mProjectMatrix, 0, -sWidthHeight/sWH,sWidthHeight/sWH, -1,1, 3, 7);
             }
         }else{
-            if(sWH>sWidthHeight){
+            if(sWH > sWidthHeight){
                 Matrix.orthoM(mProjectMatrix, 0, -1, 1, -1/sWidthHeight*sWH, 1/sWidthHeight*sWH,3, 7);
             }else{
                 Matrix.orthoM(mProjectMatrix, 0, -1, 1, -sWH/sWidthHeight, sWH/sWidthHeight,3, 7);
@@ -109,7 +112,6 @@ public class FliterRender extends TextureAbstractRender {
         GLES20.glEnableVertexAttribArray(avPosition);
         GLES20.glEnableVertexAttribArray(afPosition);
         GLES20.glEnableVertexAttribArray(vMatrix);
-        //GLES20.glEnableVertexAttribArray(vChangeColor);
 
         //设置顶点位置值
         GLES20.glVertexAttribPointer(avPosition, COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, vertexStride, vertexBuffer);
@@ -122,6 +124,9 @@ public class FliterRender extends TextureAbstractRender {
 
         GLES20.glUniform1i(vType, getFliterType());
 
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTexture);
+        GLES20.glUniform1i(sTexture, 0);
         //绘制 GLES20.GL_TRIANGLE_STRIP:复用坐标
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, vertexCount);
         GLES20.glDisableVertexAttribArray(avPosition);
@@ -199,21 +204,6 @@ public class FliterRender extends TextureAbstractRender {
                         "    } " +
                         "} ";
         return source;
-    }
-
-    private void createTexture() {
-        int[] textureIds = new int[1];
-        GLES20.glGenTextures(1, textureIds, 0);
-        if (textureIds[0] == 0) {
-            return;
-        }
-        mTexture = textureIds[0];
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTexture);
-        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER,GLES20.GL_NEAREST);
-        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D,GLES20.GL_TEXTURE_MAG_FILTER,GLES20.GL_LINEAR);
-        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S,GLES20.GL_CLAMP_TO_EDGE);
-        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T,GLES20.GL_CLAMP_TO_EDGE);
-        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, mBitmap, 0);
     }
 
     public void setFliter(FliterEffect fliter) {
