@@ -13,4 +13,9 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:text="Fliter" />
+    <Button
+        android:id="@+id/camera_button"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="Camera" />
 </LinearLayout>

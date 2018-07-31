@@ -9,6 +9,7 @@ import android.widget.Button;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
     private Button mImageBtn;
     private Button mFliterBtn;
+    private Button mCameraBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,10 +21,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void initView() {
         mImageBtn = findViewById(R.id.image_button);
         mFliterBtn = findViewById(R.id.fliter_button);
+        mCameraBtn = findViewById(R.id.camera_button);
         mImageBtn.setClickable(true);
         mImageBtn.setOnClickListener(this);
         mFliterBtn.setClickable(true);
         mFliterBtn.setOnClickListener(this);
+        mCameraBtn.setClickable(true);
+        mCameraBtn.setOnClickListener(this);
     }
 
     @Override
@@ -35,6 +39,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.fliter_button:
                 startActivity(new Intent(this, FliterActivity.class));
                 break;
+            case R.id.camera_button:
+                startActivity(new Intent(this, CameraActivity.class));
             default:
                 break;
         }
