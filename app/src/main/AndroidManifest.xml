@@ -18,11 +18,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".FliterActivity">
+        <activity android:name=".activity.FliterActivity">
         </activity>
-        <activity android:name=".ImageActivity">
+        <activity android:name=".activity.ImageActivity">
         </activity>
-        <activity android:name=".CameraActivity">
+        <activity android:name=".activity.CameraActivity">
+        </activity>
+        <activity android:name=".activity.ImageViewActivity">
+        </activity>
+        <activity android:name=".activity.ImageSurfaceActivity">
         </activity>
     </application>
 

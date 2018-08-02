@@ -7,15 +7,29 @@
         android:id="@+id/image_button"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:text="Image"/>
+        android:text="GLÏÔÊ¾Í¼Æ¬"/>
     <Button
         android:id="@+id/fliter_button"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:text="Fliter" />
+        android:text="GLÏÔÊ¾Ð§¹ûÍ¼" />
     <Button
         android:id="@+id/camera_button"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:text="Camera" />
+        android:text="GLÏÔÊ¾Ô¤ÀÀÍ¼" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/colorPrimary"/>
+    <Button
+        android:id="@+id/image_view_button"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="ImageViewÏÔÊ¾Í¼Æ¬" />
+    <Button
+        android:id="@+id/image_surfaceview_button"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="SurfaceViewÏÔÊ¾Í¼Æ¬" />
 </LinearLayout>
