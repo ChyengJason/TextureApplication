@@ -7,10 +7,12 @@ import android.view.View;
 import android.widget.Button;
 
 import com.jscheng.textureapplication.activity.CameraActivity;
+import com.jscheng.textureapplication.activity.CustomViewActivity;
 import com.jscheng.textureapplication.activity.FliterActivity;
 import com.jscheng.textureapplication.activity.ImageActivity;
 import com.jscheng.textureapplication.activity.ImageSurfaceActivity;
 import com.jscheng.textureapplication.activity.ImageViewActivity;
+import com.jscheng.textureapplication.activity.RecordingActivity;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
     private Button mImageBtn;
@@ -18,6 +20,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button mCameraBtn;
     private Button mImageViewBtn;
     private Button mImageSurfaceBtn;
+    private Button mCustomViewBtn;
+    private Button mRecordingBtn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,15 +35,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mCameraBtn = findViewById(R.id.camera_button);
         mImageViewBtn = findViewById(R.id.image_view_button);
         mImageSurfaceBtn = findViewById(R.id.image_surfaceview_button);
-        mImageBtn.setClickable(true);
+        mCustomViewBtn = findViewById(R.id.image_custom_button);
+        mRecordingBtn = findViewById(R.id.recording_button);
         mImageBtn.setOnClickListener(this);
-        mFliterBtn.setClickable(true);
         mFliterBtn.setOnClickListener(this);
-        mCameraBtn.setClickable(true);
         mCameraBtn.setOnClickListener(this);
         mImageViewBtn.setOnClickListener(this);
-        mImageSurfaceBtn.setClickable(true);
         mImageSurfaceBtn.setOnClickListener(this);
+        mCustomViewBtn.setOnClickListener(this);
+        mRecordingBtn.setOnClickListener(this);
     }
 
     @Override
@@ -59,6 +63,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.image_surfaceview_button:
                 startActivity(new Intent(this, ImageSurfaceActivity.class));
+                break;
+            case R.id.image_custom_button:
+                startActivity(new Intent(this, CustomViewActivity.class));
+                break;
+            case R.id.recording_button:
+                startActivity(new Intent(this, RecordingActivity.class));
                 break;
             default:
                 break;

@@ -7,29 +7,47 @@
         android:id="@+id/image_button"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:text="GL��ʾͼƬ"/>
+        android:text="GL图片"/>
     <Button
         android:id="@+id/fliter_button"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:text="GL��ʾЧ��ͼ" />
+        android:text="GL效果图" />
     <Button
         android:id="@+id/camera_button"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:text="GL��ʾԤ��ͼ" />
+        android:text="GL预览" />
     <TextView
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/colorPrimary"/>
+        android:background="@color/colorPrimary"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"/>
     <Button
         android:id="@+id/image_view_button"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:text="ImageView��ʾͼƬ" />
+        android:text="ImageView图片" />
     <Button
         android:id="@+id/image_surfaceview_button"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:text="SurfaceView��ʾͼƬ" />
+        android:text="SurfaceView图片" />
+    <Button
+        android:id="@+id/image_custom_button"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="CustomView图片" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/colorPrimary"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"/>
+    <Button
+        android:id="@+id/recording_button"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="录音" />
 </LinearLayout>
