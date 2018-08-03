@@ -3,7 +3,9 @@ package com.jscheng.textureapplication.activity;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.media.AudioFormat;
+import android.media.AudioManager;
 import android.media.AudioRecord;
+import android.media.AudioTrack;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Environment;
@@ -16,13 +18,13 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
-
 import com.jscheng.textureapplication.R;
-
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -36,23 +38,30 @@ public class RecordingActivity extends AppCompatActivity {
 
     private final static int AudioSource = MediaRecorder.AudioSource.DEFAULT;
     private final static int AudioRate = 44100;
-    private final static int AudioChannel = AudioFormat.CHANNEL_IN_MONO;
+    private final static int AudioInChannel = AudioFormat.CHANNEL_IN_MONO;
+    private final static int AudioOutChannel = AudioFormat.CHANNEL_OUT_MONO;
     private final static int AudioFormater = AudioFormat.ENCODING_PCM_16BIT;
     private AudioRecord mAudioRecord;
+    private AudioTrack mAudioTrack;
     private Button mRecordBtn;
+    private Button mPlayBtn;
     private boolean isRecording;
+    private boolean isPlaying;
     private ExecutorService mExecutor;
     private ThreadFactory mThreadFactory;
-    private int bufferMinSize;
+    private int recordBufferMinSize;
+    private int playBufferMinSize;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recording);
         mRecordBtn = findViewById(R.id.recording_btn);
+        mPlayBtn = findViewById(R.id.playing_btn);
         mThreadFactory = new NameThreadFactory();
         mExecutor = new ThreadPoolExecutor(1, 1, 2000L, TimeUnit.MILLISECONDS, new LinkedBlockingDeque<Runnable>(1024), mThreadFactory);
         initRecord();
+        initTrack();
         initView();
     }
 
@@ -73,6 +82,12 @@ public class RecordingActivity extends AppCompatActivity {
                 return false;
             }
         });
+        mPlayBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                playPcm();
+            }
+        });
     }
 
     private void initRecord() {
@@ -86,11 +101,17 @@ public class RecordingActivity extends AppCompatActivity {
         }
 
         isRecording = false;
-        bufferMinSize = AudioRecord.getMinBufferSize(AudioRate, AudioChannel, AudioFormater);
-        mAudioRecord = new AudioRecord(AudioSource, AudioRate, AudioChannel, AudioFormater, bufferMinSize);
+        recordBufferMinSize = AudioRecord.getMinBufferSize(AudioRate, AudioInChannel, AudioFormater);
+        mAudioRecord = new AudioRecord(AudioSource, AudioRate, AudioInChannel, AudioFormater, recordBufferMinSize);
         if (mAudioRecord.getState() != AudioRecord.STATE_INITIALIZED) {
             Log.e("mAudioRecord", "initRecord: mAudioRecord init failed");
         }
+    }
+
+    private void initTrack() {
+        isPlaying = false;
+        playBufferMinSize = AudioTrack.getMinBufferSize(AudioRate, AudioOutChannel, AudioFormater);
+        mAudioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, AudioRate, AudioOutChannel, AudioFormater, playBufferMinSize, AudioTrack.MODE_STREAM);
     }
 
     private void stopRecord() {
@@ -110,8 +131,12 @@ public class RecordingActivity extends AppCompatActivity {
             return;
         }
         isRecording = true;
-        mAudioRecord.startRecording();
         mExecutor.execute(new RecordRunnable());
+    }
+
+    private void playPcm() {
+        isPlaying = true;
+        mExecutor.execute(new PlayerRunnable());
     }
 
     @Override
@@ -132,7 +157,7 @@ public class RecordingActivity extends AppCompatActivity {
         public RecordRunnable() {
             try {
                 mFile = getRecordFile();
-                bufferbytes = new byte[bufferMinSize];
+                bufferbytes = new byte[recordBufferMinSize];
                 mOutputStream = new FileOutputStream(mFile);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -142,8 +167,9 @@ public class RecordingActivity extends AppCompatActivity {
         @Override
         public void run() {
             try {
+                mAudioRecord.startRecording();
                 while(isRecording) {
-                    int readSize = mAudioRecord.read(bufferbytes, 0, bufferMinSize);
+                    int readSize = mAudioRecord.read(bufferbytes, 0, recordBufferMinSize);
                     if (AudioRecord.ERROR_INVALID_OPERATION != readSize) {
                         mOutputStream.write(bufferbytes, 0, readSize);
                     }
@@ -162,6 +188,49 @@ public class RecordingActivity extends AppCompatActivity {
         }
     };
 
+    private class PlayerRunnable implements Runnable {
+        private InputStream mInputStream;
+        private File mFile;
+        private byte[] bufferbytes;
+
+        public PlayerRunnable() {
+            try {
+                mFile = getPlayerFile();
+                bufferbytes = new byte[playBufferMinSize];
+                mInputStream = new FileInputStream(mFile);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void run() {
+            View contentView = RecordingActivity.this.getWindow().getDecorView().findViewById(android.R.id.content);
+            if (mInputStream == null) {
+                contentView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(RecordingActivity.this, "音频不存在", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+            try {
+                while (mInputStream.available() > 0) {
+                    int readSize = mInputStream.read(bufferbytes);
+                    if (readSize== -1 || readSize == AudioTrack.ERROR_BAD_VALUE || readSize == AudioTrack.ERROR_INVALID_OPERATION) {
+                        continue;
+                    }
+                    mAudioTrack.write(bufferbytes, 0, playBufferMinSize);
+                }
+                mInputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            mAudioTrack.stop();
+            isPlaying = false;
+        }
+    }
+
     private class NameThreadFactory implements ThreadFactory {
         private int count = 0;
 
@@ -176,6 +245,7 @@ public class RecordingActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        mAudioTrack.release();
         mAudioRecord.release();
         super.onDestroy();
     }
@@ -196,5 +266,14 @@ public class RecordingActivity extends AppCompatActivity {
             mFile.delete();
         }
         return mFile;
+    }
+
+    public File getPlayerFile() {
+        File dir = new File(getSDPath());
+        File mFile = new File(dir, "record-file");
+        if (mFile.exists()) {
+            return mFile;
+        }
+        return null;
     }
 }
