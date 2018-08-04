@@ -56,26 +56,26 @@ public class CustomView extends View {
     private Rect getBitmapRect(Bitmap bimap) {
         int bimapHeight = bimap.getHeight();
         int bimapWidth = bimap.getWidth();
-        int viewWidth = getWidth();
-        int viewHeight = getHeight();
+        int viewWidth = getMeasuredWidth();
+        int viewHeight = getMeasuredHeight();
         float bimapRatio = (float) bimapWidth / (float) bimapHeight;
         float screenRatio = (float) viewWidth / (float) viewHeight;
         int factWidth;
         int factHeight;
         int x1, y1, x2, y2;
         if (bimapRatio > screenRatio) {
-            factWidth = bimapWidth;
+            factWidth = viewWidth;
             factHeight = (int)(factWidth / bimapRatio);
             x1 = 0;
             y1 = (viewHeight - factHeight) / 2;
         } else if (bimapRatio < screenRatio) {
-            factHeight = bimapHeight;
+            factHeight = viewHeight;
             factWidth = (int)(factHeight * bimapRatio);
             x1 = (viewWidth - factWidth) / 2;
             y1 = 0;
         } else {
-            factWidth = bimapWidth;
-            factHeight = bimapHeight;
+            factWidth = viewWidth;
+            factHeight = viewHeight;
             x1 = 0;
             y1 = 0;
         }

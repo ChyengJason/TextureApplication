@@ -21,20 +21,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.FliterActivity">
-        </activity>
-        <activity android:name=".activity.ImageActivity">
-        </activity>
-        <activity android:name=".activity.CameraActivity">
-        </activity>
-        <activity android:name=".activity.ImageViewActivity">
-        </activity>
-        <activity android:name=".activity.ImageSurfaceActivity">
-        </activity>
-        <activity android:name=".activity.CustomViewActivity">
-        </activity>
-        <activity android:name=".activity.RecordingActivity">
-        </activity>
+        <activity android:name=".activity.FliterActivity"/>
+        <activity android:name=".activity.ImageActivity"/>
+        <activity android:name=".activity.CameraActivity"/>
+        <activity android:name=".activity.ImageViewActivity"/>
+        <activity android:name=".activity.ImageSurfaceActivity"/>
+        <activity android:name=".activity.CustomViewActivity"/>
+        <activity android:name=".activity.RecordingActivity"/>
+        <activity android:name=".activity.CameraPreviewActivity"/>
+        <activity android:name=".activity.SurfaceviewPreviewActivity"/>
+        <activity android:name=".activity.TextureviewPreviewActivity"/>
     </application>
 
 </manifest>

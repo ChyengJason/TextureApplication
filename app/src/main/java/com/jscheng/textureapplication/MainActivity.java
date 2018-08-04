@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.jscheng.textureapplication.activity.CameraActivity;
+import com.jscheng.textureapplication.activity.CameraPreviewActivity;
 import com.jscheng.textureapplication.activity.CustomViewActivity;
 import com.jscheng.textureapplication.activity.FliterActivity;
 import com.jscheng.textureapplication.activity.ImageActivity;
@@ -22,6 +23,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button mImageSurfaceBtn;
     private Button mCustomViewBtn;
     private Button mRecordingBtn;
+    private Button mCamera2Btn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mImageSurfaceBtn = findViewById(R.id.image_surfaceview_button);
         mCustomViewBtn = findViewById(R.id.image_custom_button);
         mRecordingBtn = findViewById(R.id.recording_button);
+        mCamera2Btn = findViewById(R.id.camera_preview_button);
         mImageBtn.setOnClickListener(this);
         mFliterBtn.setOnClickListener(this);
         mCameraBtn.setOnClickListener(this);
@@ -44,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mImageSurfaceBtn.setOnClickListener(this);
         mCustomViewBtn.setOnClickListener(this);
         mRecordingBtn.setOnClickListener(this);
+        mCamera2Btn.setOnClickListener(this);
     }
 
     @Override
@@ -69,6 +73,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.recording_button:
                 startActivity(new Intent(this, RecordingActivity.class));
+                break;
+            case R.id.camera_preview_button:
+                startActivity(new Intent(this, CameraPreviewActivity.class));
                 break;
             default:
                 break;

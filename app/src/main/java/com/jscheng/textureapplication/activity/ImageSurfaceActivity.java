@@ -31,12 +31,15 @@ public class ImageSurfaceActivity extends AppCompatActivity implements SurfaceHo
     }
 
     private void initSurfaceView() {
+        // 创建一个只有一个线程的线程池，其实用Thread也可以
         mThread = new ThreadPoolExecutor(1, 1, 2000L, TimeUnit.MILLISECONDS, new LinkedBlockingDeque<Runnable>());
+        // 添加SurfaceHolder.callback，在回调中可以绘制
         mSurfaceView.getHolder().addCallback(this);
     }
 
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
+        // 执行绘制
         mThread.execute(new DrawRunnable());
     }
 
@@ -57,7 +60,7 @@ public class ImageSurfaceActivity extends AppCompatActivity implements SurfaceHo
         public void run() {
             Bitmap bimap = BitmapFactory.decodeResource(ImageSurfaceActivity.this.getResources(), R.mipmap.images);
             SurfaceHolder surfaceHolder = mSurfaceView.getHolder();
-            Canvas canvas = surfaceHolder.lockCanvas();
+            Canvas canvas = surfaceHolder.lockCanvas(); // 获取画布
             Paint paint = new Paint();
             Rect srcRect = new Rect(0, 0, bimap.getHeight(), bimap.getWidth());
             Rect destRect = getBitmapRect(bimap);
@@ -66,23 +69,26 @@ public class ImageSurfaceActivity extends AppCompatActivity implements SurfaceHo
         }
     }
 
+    /**
+     *     图片的尺寸和屏幕的尺寸不一样，需要把图片调整居中
+     **/
     private Rect getBitmapRect(Bitmap bimap) {
         int bimapHeight = bimap.getHeight();
         int bimapWidth = bimap.getWidth();
         int viewWidth = mSurfaceView.getWidth();
         int viewHeight = mSurfaceView.getHeight();
-        float bimapRatio = (float) bimapWidth / (float) bimapHeight;
+        float bimapRatio = (float) bimapWidth / (float) bimapHeight; // 宽高比
         float screenRatio = (float) viewWidth / (float) viewHeight;
         int factWidth;
         int factHeight;
         int x1, y1, x2, y2;
         if (bimapRatio > screenRatio) {
-            factWidth = bimapWidth;
+            factWidth = viewWidth;
             factHeight = (int)(factWidth / bimapRatio);
             x1 = 0;
             y1 = (viewHeight - factHeight) / 2;
         } else if (bimapRatio < screenRatio) {
-            factHeight = bimapHeight;
+            factHeight = viewHeight;
             factWidth = (int)(factHeight * bimapRatio);
             x1 = (viewWidth - factWidth) / 2;
             y1 = 0;
