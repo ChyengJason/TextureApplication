@@ -34,6 +34,8 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import static com.jscheng.textureapplication.activity.RecordingActivity.PlayerMode.WAV;
+
 public class RecordingActivity extends AppCompatActivity implements View.OnClickListener{
     public static String[] MICROPHONE = {Manifest.permission.RECORD_AUDIO};
     public static String[] STORAGE = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
@@ -48,6 +50,7 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
     private Button mRecordBtn;
     private Button mPlayBtn;
     private Button mWavBtn;
+    private Button mPlayWavBtn;
 
     private boolean isRecording;
     private boolean isPlaying;
@@ -63,6 +66,7 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
         mRecordBtn = findViewById(R.id.recording_btn);
         mPlayBtn = findViewById(R.id.playing_btn);
         mWavBtn = findViewById(R.id.wav_btn);
+        mPlayWavBtn = findViewById(R.id.play_wav_btn);
         mThreadFactory = new NameThreadFactory();
         mExecutor = new ThreadPoolExecutor(1, 1, 2000L, TimeUnit.MILLISECONDS, new LinkedBlockingDeque<Runnable>(1024), mThreadFactory);
         initRecord();
@@ -89,6 +93,7 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
         });
         mPlayBtn.setOnClickListener(this);
         mWavBtn.setOnClickListener(this);
+        mPlayWavBtn.setOnClickListener(this);
     }
 
     private void initRecord() {
@@ -137,9 +142,13 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
 
     private void playPcm() {
         isPlaying = true;
-        mExecutor.execute(new PlayerRunnable());
+        mExecutor.execute(new PlayerRunnable(PlayerMode.PCM));
     }
 
+    private void playWav() {
+        isPlaying = true;
+        mExecutor.execute(new PlayerRunnable(PlayerMode.WAV));
+    }
 
     private void changeToWav() {
         File pcmFile = getRecordFile(false);
@@ -173,6 +182,8 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
             case R.id.wav_btn:
                 changeToWav();
                 break;
+            case R.id.play_wav_btn:
+                playWav();
             default:
                 break;
         }
@@ -217,20 +228,23 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
         }
     };
 
+    public enum PlayerMode { WAV, PCM};
+
     private class PlayerRunnable implements Runnable {
         private InputStream mInputStream;
         private File mFile;
         private byte[] bufferbytes;
+        private PlayerMode playerMode;
 
-        public PlayerRunnable() {
-
+        public PlayerRunnable(PlayerMode playerMode) {
+            this.playerMode = playerMode;
         }
 
         @Override
         public void run() {
             View contentView = RecordingActivity.this.getWindow().getDecorView().findViewById(android.R.id.content);
             try {
-                mFile = getPlayerFile();
+                mFile = playerMode == PlayerMode.PCM ? getPlayerFile() : getWAVFile();
                 if (mFile == null || !mFile.exists()) {
                     contentView.post(new Runnable() {
                         @Override
@@ -243,7 +257,9 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
                 mAudioTrack.play();
                 bufferbytes = new byte[playBufferMinSize];
                 mInputStream = new FileInputStream(mFile);
-
+                if (playerMode == WAV) {
+                    mInputStream.skip(44); // 去除WAV头部
+                }
                 while (mInputStream.available() > 0) {
                     int readSize = mInputStream.read(bufferbytes);
                     mAudioTrack.write(bufferbytes, 0, readSize);

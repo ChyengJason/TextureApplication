@@ -33,4 +33,14 @@
         android:layout_marginEnd="10dp"
         android:layout_marginStart="10dp"
         android:text="转化WAV" />
+
+    <Button
+        android:id="@+id/play_wav_btn"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_above="@id/wav_btn"
+        android:layout_marginBottom="20dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp"
+        android:text="播放WAV" />
 </RelativeLayout>
