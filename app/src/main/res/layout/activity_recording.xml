@@ -13,18 +13,24 @@
         android:layout_marginEnd="10dp"
         android:layout_marginStart="10dp"
         android:text="开始录音"/>
+
     <Button
         android:id="@+id/playing_btn"
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:layout_above="@id/recording_btn"
+        android:layout_marginBottom="20dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp"
         android:text="播放录音" />
-    <!--<Button-->
-        <!--android:id="@+id/play_pcm_btn"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="50dp"-->
-        <!--android:layout_alignParentBottom="true"-->
-        <!--android:layout_marginBottom="@id/recording_btn"-->
-        <!--android:layout_marginEnd="10dp"-->
-        <!--android:layout_marginStart="10dp"-->
-        <!--android:text="播放录音"/>-->
+
+    <Button
+        android:id="@+id/wav_btn"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_above="@id/playing_btn"
+        android:layout_marginBottom="20dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp"
+        android:text="转化WAV" />
 </RelativeLayout>

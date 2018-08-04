@@ -19,6 +19,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 import com.jscheng.textureapplication.R;
+import com.jscheng.textureapplication.util.Pcm2WavUtil;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -32,7 +34,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class RecordingActivity extends AppCompatActivity {
+public class RecordingActivity extends AppCompatActivity implements View.OnClickListener{
     public static String[] MICROPHONE = {Manifest.permission.RECORD_AUDIO};
     public static String[] STORAGE = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
@@ -45,6 +47,8 @@ public class RecordingActivity extends AppCompatActivity {
     private AudioTrack mAudioTrack;
     private Button mRecordBtn;
     private Button mPlayBtn;
+    private Button mWavBtn;
+
     private boolean isRecording;
     private boolean isPlaying;
     private ExecutorService mExecutor;
@@ -58,6 +62,7 @@ public class RecordingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_recording);
         mRecordBtn = findViewById(R.id.recording_btn);
         mPlayBtn = findViewById(R.id.playing_btn);
+        mWavBtn = findViewById(R.id.wav_btn);
         mThreadFactory = new NameThreadFactory();
         mExecutor = new ThreadPoolExecutor(1, 1, 2000L, TimeUnit.MILLISECONDS, new LinkedBlockingDeque<Runnable>(1024), mThreadFactory);
         initRecord();
@@ -82,12 +87,8 @@ public class RecordingActivity extends AppCompatActivity {
                 return false;
             }
         });
-        mPlayBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                playPcm();
-            }
-        });
+        mPlayBtn.setOnClickListener(this);
+        mWavBtn.setOnClickListener(this);
     }
 
     private void initRecord() {
@@ -139,6 +140,20 @@ public class RecordingActivity extends AppCompatActivity {
         mExecutor.execute(new PlayerRunnable());
     }
 
+
+    private void changeToWav() {
+        File pcmFile = getRecordFile(false);
+        File wavFile = getWAVFile();
+        if (!pcmFile.exists()) {
+            Toast.makeText(this, "pcm文件不存在", Toast.LENGTH_SHORT).show();
+        } else {
+            Pcm2WavUtil pcm2WavUtil = new Pcm2WavUtil(AudioRate, AudioInChannel, AudioFormater);
+            pcm2WavUtil.pcm2wav(wavFile, pcmFile);
+            Toast.makeText(this, "转化成功：" + wavFile.getAbsolutePath(), Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -149,6 +164,20 @@ public class RecordingActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.playing_btn:
+                playPcm();
+                break;
+            case R.id.wav_btn:
+                changeToWav();
+                break;
+            default:
+                break;
+        }
+    }
+
     private class RecordRunnable implements Runnable {
         private OutputStream mOutputStream;
         private byte[] bufferbytes;
@@ -156,7 +185,7 @@ public class RecordingActivity extends AppCompatActivity {
 
         public RecordRunnable() {
             try {
-                mFile = getRecordFile();
+                mFile = getRecordFile(true);
                 bufferbytes = new byte[recordBufferMinSize];
                 mOutputStream = new FileOutputStream(mFile);
             } catch (FileNotFoundException e) {
@@ -194,35 +223,34 @@ public class RecordingActivity extends AppCompatActivity {
         private byte[] bufferbytes;
 
         public PlayerRunnable() {
-            try {
-                mFile = getPlayerFile();
-                bufferbytes = new byte[playBufferMinSize];
-                mInputStream = new FileInputStream(mFile);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
+
         }
 
         @Override
         public void run() {
             View contentView = RecordingActivity.this.getWindow().getDecorView().findViewById(android.R.id.content);
-            if (mInputStream == null) {
-                contentView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(RecordingActivity.this, "音频不存在", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
             try {
+                mFile = getPlayerFile();
+                if (mFile == null || !mFile.exists()) {
+                    contentView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(RecordingActivity.this, "音频不存在", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    return;
+                }
+                mAudioTrack.play();
+                bufferbytes = new byte[playBufferMinSize];
+                mInputStream = new FileInputStream(mFile);
+
                 while (mInputStream.available() > 0) {
                     int readSize = mInputStream.read(bufferbytes);
-                    if (readSize== -1 || readSize == AudioTrack.ERROR_BAD_VALUE || readSize == AudioTrack.ERROR_INVALID_OPERATION) {
-                        continue;
-                    }
-                    mAudioTrack.write(bufferbytes, 0, playBufferMinSize);
+                    mAudioTrack.write(bufferbytes, 0, readSize);
                 }
                 mInputStream.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -258,11 +286,11 @@ public class RecordingActivity extends AppCompatActivity {
         return Environment.getRootDirectory().getAbsolutePath();
     }
 
-    public File getRecordFile() {
+    public File getRecordFile(boolean delete) {
         File dir = new File(getSDPath());
         dir.mkdirs();
-        File mFile = new File(dir, "record-file");
-        if (mFile.exists()) {
+        File mFile = new File(dir, "record-file.pcm");
+        if (delete && mFile.exists()) {
             mFile.delete();
         }
         return mFile;
@@ -270,10 +298,24 @@ public class RecordingActivity extends AppCompatActivity {
 
     public File getPlayerFile() {
         File dir = new File(getSDPath());
-        File mFile = new File(dir, "record-file");
+        File mFile = new File(dir, "record-file.pcm");
         if (mFile.exists()) {
             return mFile;
         }
         return null;
+    }
+
+    public File getWAVFile() {
+        File dir = new File(getSDPath());
+        dir.mkdirs();
+        File mFile = new File(dir, "record-file.wav");
+        if (!mFile.exists()) {
+            try {
+                mFile.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return mFile;
     }
 }
