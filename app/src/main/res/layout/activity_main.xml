@@ -39,17 +39,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:text="CustomView图片" />
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/colorPrimary"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"/>
-    <Button
-        android:id="@+id/recording_button"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:text="录音" />
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="1dp"
@@ -62,4 +52,16 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:text="camera预览" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/colorPrimary"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"/>
+    <Button
+        android:id="@+id/recording_button"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="录音" />
 </LinearLayout>
