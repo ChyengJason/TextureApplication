@@ -48,6 +48,19 @@
         android:layout_marginBottom="10dp"/>
 
     <Button
+        android:id="@+id/media_extracotr_btn"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="mp4转换" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/colorPrimary"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"/>
+
+    <Button
         android:id="@+id/camera_preview_button"
         android:layout_width="match_parent"
         android:layout_height="50dp"

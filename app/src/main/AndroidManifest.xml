@@ -31,6 +31,7 @@
         <activity android:name=".activity.CameraPreviewActivity"/>
         <activity android:name=".activity.SurfaceviewPreviewActivity"/>
         <activity android:name=".activity.TextureviewPreviewActivity"/>
+        <activity android:name=".activity.MediaExtractorActivity"/>
     </application>
 
 </manifest>

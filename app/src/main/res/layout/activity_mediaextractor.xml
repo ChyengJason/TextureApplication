@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:orientation="vertical">
+    <Button
+        android:id="@+id/seperate_btn"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="分离"/>
+    <Button
+        android:id="@+id/seperate_audio_btn"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="封装声频"/>
+    <Button
+        android:id="@+id/seperate_media_btn"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="封装视频"/>
+    <Button
+        android:id="@+id/muxer_btn"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="合成MP4"/>
+</LinearLayout>

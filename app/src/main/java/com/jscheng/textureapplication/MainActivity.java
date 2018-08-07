@@ -13,17 +13,11 @@ import com.jscheng.textureapplication.activity.FliterActivity;
 import com.jscheng.textureapplication.activity.ImageActivity;
 import com.jscheng.textureapplication.activity.ImageSurfaceActivity;
 import com.jscheng.textureapplication.activity.ImageViewActivity;
+import com.jscheng.textureapplication.activity.MediaExtractorActivity;
 import com.jscheng.textureapplication.activity.RecordingActivity;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
-    private Button mImageBtn;
-    private Button mFliterBtn;
-    private Button mCameraBtn;
-    private Button mImageViewBtn;
-    private Button mImageSurfaceBtn;
-    private Button mCustomViewBtn;
-    private Button mRecordingBtn;
-    private Button mCamera2Btn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,22 +26,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initView() {
-        mImageBtn = findViewById(R.id.image_button);
-        mFliterBtn = findViewById(R.id.fliter_button);
-        mCameraBtn = findViewById(R.id.camera_button);
-        mImageViewBtn = findViewById(R.id.image_view_button);
-        mImageSurfaceBtn = findViewById(R.id.image_surfaceview_button);
-        mCustomViewBtn = findViewById(R.id.image_custom_button);
-        mRecordingBtn = findViewById(R.id.recording_button);
-        mCamera2Btn = findViewById(R.id.camera_preview_button);
-        mImageBtn.setOnClickListener(this);
-        mFliterBtn.setOnClickListener(this);
-        mCameraBtn.setOnClickListener(this);
-        mImageViewBtn.setOnClickListener(this);
-        mImageSurfaceBtn.setOnClickListener(this);
-        mCustomViewBtn.setOnClickListener(this);
-        mRecordingBtn.setOnClickListener(this);
-        mCamera2Btn.setOnClickListener(this);
+        findViewById(R.id.image_button).setOnClickListener(this);
+       findViewById(R.id.fliter_button).setOnClickListener(this);
+        findViewById(R.id.camera_button).setOnClickListener(this);
+        findViewById(R.id.image_view_button).setOnClickListener(this);
+        findViewById(R.id.image_surfaceview_button).setOnClickListener(this);
+        findViewById(R.id.image_custom_button).setOnClickListener(this);
+        findViewById(R.id.recording_button).setOnClickListener(this);
+        findViewById(R.id.camera_preview_button).setOnClickListener(this);
+        findViewById(R.id.media_extracotr_btn).setOnClickListener(this);
     }
 
     @Override
@@ -76,6 +63,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.camera_preview_button:
                 startActivity(new Intent(this, CameraPreviewActivity.class));
+                break;
+            case R.id.media_extracotr_btn:
+                startActivity(new Intent(this, MediaExtractorActivity.class));
                 break;
             default:
                 break;

@@ -10,7 +10,6 @@ import java.io.IOException;
 
 public class Pcm2WavUtil {
     private int mSampleRate;
-    //private int mChannels;
     private int minBufferSize;
 
     public Pcm2WavUtil(int mSampleRate, int mChannels, int mFormater) {
