@@ -194,44 +194,52 @@ public class MediaExtractorActivity extends AppCompatActivity implements View.On
         MediaMuxer mMediaMuxer = null;
         try {
             mMediaMuxer = new MediaMuxer(getSDPath() + "/" + fileName, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
+            // 获取assert中的资源文件
             AssetFileDescriptor fileDescriptor = getAssetFileSource();
+            // 设置资源文件
             mMediaExtractor.setDataSource(fileDescriptor.getFileDescriptor(), fileDescriptor.getStartOffset(), fileDescriptor.getLength());
             int mMediaIndex = 0;
             for (int i = 0; i < mMediaExtractor.getTrackCount(); i++) {
+                //获取码流的详细格式/配置信息
                 MediaFormat format = mMediaExtractor.getTrackFormat(i);
                 String mine = format.getString(MediaFormat.KEY_MIME);
+                // 查找音频："audio/" 或者视频："video/"的轨道
                 if (mine.startsWith(type)) {
                     mMediaIndex = i;
                     break;
                 }
             }
-
+            // 选择感兴趣的轨道
             mMediaExtractor.selectTrack(mMediaIndex);
+            // 获取通道格式，可以自己新建，但是有坑
             MediaFormat mediaFormat = mMediaExtractor.getTrackFormat(mMediaIndex);
             int muxerTrackIndex = mMediaMuxer.addTrack(mediaFormat);
+            // 当采集视频的使用，需要获取帧率，音频轨道没有这个参数
             int framerate = isAudio ? 0 : mediaFormat.getInteger(MediaFormat.KEY_FRAME_RATE);
             mMediaMuxer.start();
 
             ByteBuffer byteBuffer = ByteBuffer.allocate(500 * 1024);
             int readSize = 0;
+            // writeSampleData需要BufferInfo参数
             MediaCodec.BufferInfo bufferInfo = new MediaCodec.BufferInfo();
             while((readSize = mMediaExtractor.readSampleData(byteBuffer, 0)) > 0) {
                 bufferInfo.size = readSize;
-                bufferInfo.flags = mMediaExtractor.getSampleFlags();
+                bufferInfo.flags = mMediaExtractor.getSampleFlags(); //设置为关键帧等
                 bufferInfo.offset = 0;
-                if (!isAudio) {
+                if (!isAudio) { // 时间戳，音频和视频的处理方式不一样
                     bufferInfo.presentationTimeUs += 1000 * 1000 / framerate;
                 } else {
                     bufferInfo.presentationTimeUs = mMediaExtractor.getSampleTime();
                 }
                 mMediaMuxer.writeSampleData(muxerTrackIndex, byteBuffer, bufferInfo);
                 Log.d("getSampleTime", "seperateMedia: " + mMediaExtractor.getSampleTime() );
-                mMediaExtractor.advance();
+                mMediaExtractor.advance(); //下一帧
             }
             return "success";
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
+            // 释放资源
             if(mMediaExtractor != null ) {
                 mMediaExtractor.release();
                 mMediaExtractor = null;
