@@ -4,12 +4,6 @@
     android:layout_width="match_parent"
     android:orientation="vertical">
     <Button
-        android:id="@+id/seperate_btn"
-        android:layout_marginTop="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:text="分离"/>
-    <Button
         android:id="@+id/seperate_audio_btn"
         android:layout_width="match_parent"
         android:layout_height="50dp"
