@@ -32,6 +32,7 @@
         <activity android:name=".activity.SurfaceviewPreviewActivity"/>
         <activity android:name=".activity.TextureviewPreviewActivity"/>
         <activity android:name=".activity.MediaExtractorActivity"/>
+        <activity android:name=".activity.TriangleActivity"/>
     </application>
 
 </manifest>

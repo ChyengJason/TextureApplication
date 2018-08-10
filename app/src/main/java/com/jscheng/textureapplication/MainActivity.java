@@ -15,6 +15,7 @@ import com.jscheng.textureapplication.activity.ImageSurfaceActivity;
 import com.jscheng.textureapplication.activity.ImageViewActivity;
 import com.jscheng.textureapplication.activity.MediaExtractorActivity;
 import com.jscheng.textureapplication.activity.RecordingActivity;
+import com.jscheng.textureapplication.activity.TriangleActivity;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.recording_button).setOnClickListener(this);
         findViewById(R.id.camera_preview_button).setOnClickListener(this);
         findViewById(R.id.media_extracotr_btn).setOnClickListener(this);
+        findViewById(R.id.triangle_button).setOnClickListener(this);
     }
 
     @Override
@@ -66,6 +68,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.media_extracotr_btn:
                 startActivity(new Intent(this, MediaExtractorActivity.class));
+                break;
+            case R.id.triangle_button:
+                startActivity(new Intent(this, TriangleActivity.class));
                 break;
             default:
                 break;
