@@ -38,6 +38,7 @@ public class TriangleActivity extends AppCompatActivity {
         private int mAfColor;
         private FloatBuffer mVertextPostionBuffer;
         private FloatBuffer mFragmentColorBuffer;
+        private boolean isInited;
 
         private float[] mVertextPosition = {
                 -0.5f, 0.5f, 0f,
@@ -53,6 +54,7 @@ public class TriangleActivity extends AppCompatActivity {
 
         @Override
         public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
+            isInited = false;
             mVertexShader = GLES20.glCreateShader(GLES20.GL_VERTEX_SHADER);
             GLES20.glShaderSource(mVertexShader, VertexSource);
             GLES20.glCompileShader(mVertexShader);
@@ -96,6 +98,7 @@ public class TriangleActivity extends AppCompatActivity {
             mFragmentColorBuffer = ByteBuffer.allocateDirect(mFragmentColor.length * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
             mFragmentColorBuffer.put(mFragmentColor);
             mFragmentColorBuffer.position(0);
+            isInited = true;
         }
 
         @Override
@@ -107,6 +110,9 @@ public class TriangleActivity extends AppCompatActivity {
 
         @Override
         public void onDrawFrame(GL10 gl10) {
+            if (!isInited) {
+                return;
+            }
             GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
             GLES20.glUseProgram(mProgram);
             GLES20.glEnableVertexAttribArray(mAvPosition);
