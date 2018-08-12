@@ -167,6 +167,7 @@ public class MediaExtractorActivity extends AppCompatActivity implements View.On
                 mMediaMuxer.writeSampleData(audioMuxerTrack, byteBuffer, audioBufferInfo);
                 mAudioExtractor.advance();
             }
+            mMediaMuxer.stop();
             return getSDPath() + resultName;
         } catch (IOException e) {
             e.printStackTrace();
@@ -180,7 +181,6 @@ public class MediaExtractorActivity extends AppCompatActivity implements View.On
                 mAudioExtractor = null;
             }
             if(mMediaMuxer != null) {
-                mMediaMuxer.stop();
                 mMediaMuxer.release();
                 mMediaMuxer = null;
             }
@@ -215,7 +215,10 @@ public class MediaExtractorActivity extends AppCompatActivity implements View.On
             MediaFormat mediaFormat = mMediaExtractor.getTrackFormat(mMediaIndex);
             int muxerTrackIndex = mMediaMuxer.addTrack(mediaFormat);
             // 当采集视频的使用，需要获取帧率，音频轨道没有这个参数
-            int framerate = isAudio ? 0 : mediaFormat.getInteger(MediaFormat.KEY_FRAME_RATE);
+            int framerate = 0;
+            if (mediaFormat.containsKey(MediaFormat.KEY_FRAME_RATE)) {
+                framerate = mediaFormat.getInteger(MediaFormat.KEY_FRAME_RATE);
+            }
             mMediaMuxer.start();
 
             ByteBuffer byteBuffer = ByteBuffer.allocate(500 * 1024);
@@ -226,7 +229,7 @@ public class MediaExtractorActivity extends AppCompatActivity implements View.On
                 bufferInfo.size = readSize;
                 bufferInfo.flags = mMediaExtractor.getSampleFlags(); //设置为关键帧等
                 bufferInfo.offset = 0;
-                if (!isAudio) { // 时间戳，音频和视频的处理方式不一样
+                if (framerate != 0) { // 时间戳，音频和视频的处理方式不一样
                     bufferInfo.presentationTimeUs += 1000 * 1000 / framerate;
                 } else {
                     bufferInfo.presentationTimeUs = mMediaExtractor.getSampleTime();
@@ -235,6 +238,7 @@ public class MediaExtractorActivity extends AppCompatActivity implements View.On
                 Log.d("getSampleTime", "seperateMedia: " + mMediaExtractor.getSampleTime() );
                 mMediaExtractor.advance(); //下一帧
             }
+            mMediaMuxer.stop();
             return "success";
         } catch (IOException e) {
             e.printStackTrace();
@@ -245,7 +249,6 @@ public class MediaExtractorActivity extends AppCompatActivity implements View.On
                 mMediaExtractor = null;
             }
             if(mMediaMuxer != null) {
-                mMediaMuxer.stop();
                 mMediaMuxer.release();
                 mMediaMuxer = null;
             }
