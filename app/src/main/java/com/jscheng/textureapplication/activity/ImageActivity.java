@@ -27,7 +27,9 @@ public class ImageActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mSurfaceView = new GLSurfaceView(this);
+        mSurfaceView.setEGLContextClientVersion(2);
         mSurfaceView.setRenderer(new ImageRender(this, R.mipmap.images));
+        mSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
         setContentView(mSurfaceView);
     }
 
@@ -47,19 +49,22 @@ public class ImageActivity extends AppCompatActivity {
         private int mTextureId;
         private FloatBuffer mVertexPositionBuffer;
         private FloatBuffer mTexturePositionBuffer;
-
+        private int COORD_COUNT = 5;
+        // 纹理坐标
         private float[] vertexPositions = new float[] {
-                -1f, 1f, 0f,
-                1f, 1f, 0f,
-                1f, -1f, 0f,
-                -1f, -1f, 0f
+                -1f, 1f,
+                1f, 1f,
+                1f, -1f,
+                -1f, -1f,
+                -1f, 1f,
         };
-
+        // 图像坐标 与 纹理坐标一一对应
         private float[] texturePositions = new float[] {
                 0.0f, 0.0f,
-                0.0f, 1.0f,
                 1.0f, 0.0f,
                 1.0f, 1.0f,
+                0.0f, 1.0f,
+                0.0f, 0.0f,
         };
 
         public ImageRender(Context context, int resouceId) {
@@ -70,10 +75,10 @@ public class ImageActivity extends AppCompatActivity {
 
         @Override
         public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
+            int[] status = new int[1];
             mVertexShader = GLES20.glCreateShader(GLES20.GL_VERTEX_SHADER);
             GLES20.glShaderSource(mVertexShader, VertexSource);
             GLES20.glCompileShader(mVertexShader);
-            int[] status = new int[1];
             GLES20.glGetShaderiv(mVertexShader, GLES20.GL_COMPILE_STATUS, status, 0);
             if (status[0] == GLES20.GL_FALSE) {
                 Log.e(TAG, "glCompileShader mVertextShader: " + GLES20.glGetShaderInfoLog(mVertexShader));
@@ -145,21 +150,22 @@ public class ImageActivity extends AppCompatActivity {
             GLES20.glUseProgram(mProgram);
 
             GLES20.glEnableVertexAttribArray(mVertexPosition);
-            GLES20.glVertexAttribPointer(mVertexPosition, 4, GLES20.GL_FLOAT, false, 12, mVertexPositionBuffer);
+            // size 指的是每次取几个点
+            GLES20.glVertexAttribPointer(mVertexPosition, 2, GLES20.GL_FLOAT, false, 8, mVertexPositionBuffer);
 
             GLES20.glEnableVertexAttribArray(mTexturePosition);
-            GLES20.glVertexAttribPointer(mTexturePosition, 4, GLES20.GL_FLOAT, false, 8, mTexturePositionBuffer);
+            GLES20.glVertexAttribPointer(mTexturePosition, 2, GLES20.GL_FLOAT, false, 8, mTexturePositionBuffer);
 
             // 激活
             GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureId);
             GLES20.glUniform1i(mTexture, 0);
 
-            GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
+            GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, COORD_COUNT);
         }
 
         private static String VertexSource = "attribute vec4 av_Position;" +
-                "attribute vec4 as_Position;" +
+                "attribute vec2 as_Position;" +
                 "varying vec2 vs_Position;" +
                 "void main() {" +
                 "    vs_Position = as_Position;" +
@@ -172,6 +178,5 @@ public class ImageActivity extends AppCompatActivity {
                 "void main() {" +
                 "    gl_FragColor = texture2D(u_texture, vs_Position); " +
                 "}";
-
     }
 }
