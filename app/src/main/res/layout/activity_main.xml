@@ -4,11 +4,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
     <Button
-        android:id="@+id/image_button"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:text="GL图片"/>
-    <Button
         android:id="@+id/fliter_button"
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -24,6 +19,19 @@
         android:background="@color/colorPrimary"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"/>
+
+    <Button
+        android:id="@+id/aac_button"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="aac"/>
+
+    <Button
+        android:id="@+id/image_button"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="GL图片"/>
+
     <Button
         android:id="@+id/image_view_button"
         android:layout_width="match_parent"

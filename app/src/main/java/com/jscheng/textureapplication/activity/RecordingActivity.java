@@ -210,7 +210,7 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
                 mAudioRecord.startRecording();
                 while(isRecording) {
                     int readSize = mAudioRecord.read(bufferbytes, 0, recordBufferMinSize);
-                    if (AudioRecord.ERROR_INVALID_OPERATION != readSize) {
+                    if (readSize > 0) {
                         mOutputStream.write(bufferbytes, 0, readSize);
                     }
                 }

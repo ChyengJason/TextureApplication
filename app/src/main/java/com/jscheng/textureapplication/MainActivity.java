@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.jscheng.textureapplication.activity.AacActivity;
 import com.jscheng.textureapplication.activity.CameraActivity;
 import com.jscheng.textureapplication.activity.CameraPreviewActivity;
 import com.jscheng.textureapplication.activity.CustomViewActivity;
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.camera_preview_button).setOnClickListener(this);
         findViewById(R.id.media_extracotr_btn).setOnClickListener(this);
         findViewById(R.id.triangle_button).setOnClickListener(this);
+        findViewById(R.id.aac_button).setOnClickListener(this);
     }
 
     @Override
@@ -71,6 +73,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.triangle_button:
                 startActivity(new Intent(this, TriangleActivity.class));
+                break;
+            case R.id.aac_button:
+                startActivity(new Intent(this, AacActivity.class));
                 break;
             default:
                 break;
