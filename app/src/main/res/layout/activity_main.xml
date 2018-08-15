@@ -24,7 +24,14 @@
         android:id="@+id/aac_button"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:text="aac"/>
+        android:text="aac录制"/>
+
+
+    <Button
+        android:id="@+id/aac_play_button"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="aac播放"/>
 
     <Button
         android:id="@+id/image_button"

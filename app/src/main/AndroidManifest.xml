@@ -33,7 +33,8 @@
         <activity android:name=".activity.TextureviewPreviewActivity"/>
         <activity android:name=".activity.MediaExtractorActivity"/>
         <activity android:name=".activity.TriangleActivity"/>
-        <activity android:name=".activity.AacActivity"/>
+        <activity android:name=".activity.AacRecordActivity"/>
+        <activity android:name=".activity.AacTrackActivity"/>
     </application>
 
 </manifest>
