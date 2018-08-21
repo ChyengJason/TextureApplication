@@ -35,7 +35,7 @@ import java.util.List;
 
 public class SurfaceviewPreviewActivity extends AppCompatActivity implements View.OnClickListener, SurfaceHolder.Callback {
     private static final int STATE_FOCUS = 1;
-    private static final int STATE_PREVIEW =2;
+    private static final int STATE_PREVIEW = 2;
     private Button mCaptureBtn;
     private Button mChangeBtn;
     private SurfaceView mSurfaceView;

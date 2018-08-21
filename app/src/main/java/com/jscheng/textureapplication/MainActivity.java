@@ -15,6 +15,7 @@ import com.jscheng.textureapplication.activity.ImageActivity;
 import com.jscheng.textureapplication.activity.ImageSurfaceActivity;
 import com.jscheng.textureapplication.activity.ImageViewActivity;
 import com.jscheng.textureapplication.activity.MediaExtractorActivity;
+import com.jscheng.textureapplication.activity.Mp4CollectActivity;
 import com.jscheng.textureapplication.activity.RecordingActivity;
 import com.jscheng.textureapplication.activity.TriangleActivity;
 
@@ -40,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.triangle_button).setOnClickListener(this);
         findViewById(R.id.aac_button).setOnClickListener(this);
         findViewById(R.id.aac_play_button).setOnClickListener(this);
+        findViewById(R.id.recording_mp4).setOnClickListener(this);
     }
 
     @Override
@@ -80,6 +82,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.aac_play_button:
                 startActivity(new Intent(this, AacTrackActivity.class));
+                break;
+            case R.id.recording_mp4:
+                startActivity(new Intent(this, Mp4CollectActivity.class));
+                break;
             default:
                 break;
         }
